@@ -22,15 +22,15 @@ fi
 # Skip db ping if SKIP_DB_PING is set to a value other than false or empty string
 if [[ "$SKIP_DB_PING" == "false" ]]; then
   # Ensures that the database is available
-  /opt/venv/bin/python /opt/CTFd/ping.py
+  python ping.py
 fi
 
 # Initialize database
-/opt/venv/bin/flask db upgrade
+flask db upgrade
 
 # Start CTFd
 echo "Starting CTFd"
-exec /opt/venv/bin/gunicorn 'CTFd:create_app()' \
+exec gunicorn 'CTFd:create_app()' \
     --bind '0.0.0.0:8000' \
     --workers $WORKERS \
     --worker-tmp-dir "$WORKER_TEMP_DIR" \
