@@ -1,5 +1,20 @@
 services:
-  # 1. CTFd 웹 서비스
+  # 1. PostgreSQL 데이터베이스 (새 이름으로 정의)
+  - type: pserv
+    name: ctfd-db
+    region: oregon
+    databaseName: ctfd
+    user: ctfd_user
+
+  # 2. Redis 데이터베이스
+  - type: redis
+    name: ctfd-redis
+    region: oregon
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: "Allow all connections"
+
+  # 3. CTFd 웹 서비스 (데이터베이스 정의 이후에 배치)
   - type: web
     name: ctfd
     env: python
@@ -12,24 +27,11 @@ services:
       - key: DATABASE_URL
         fromService:
           type: pserv
-          name: swingctfdb
-          # 'internalConnectionString' 이 아닌 'connectionString'을 사용
+          # 새로 변경된 데이터베이스 이름(ctfd-db)을 참조
+          name: ctfd-db
           property: connectionString
       - key: REDIS_URL
         fromService:
           type: redis
           name: ctfd-redis
           property: connectionString
-
-  # 2. PostgreSQL 데이터베이스 (가장 간결한 형태로 수정)
-  - type: pserv
-    name: swingctfdb
-    region: oregon
-
-  # 3. Redis 데이터베이스 (가장 간결한 형태로 수정 + IP 허용 목록)
-  - type: redis
-    name: ctfd-redis
-    region: oregon
-    ipAllowList:
-      - source: 0.0.0.0/0
-        description: "Allow all connections"
