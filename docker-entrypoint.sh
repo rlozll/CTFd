@@ -1,4 +1,5 @@
 #!/bin/bash
+. /opt/venv/bin/activate
 set -euo pipefail
 
 WORKERS=${WORKERS:-1}
