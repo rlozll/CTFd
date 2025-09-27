@@ -5,6 +5,14 @@ databases:
 
 # 실행되는 서비스들을 정의하는 최상위 섹션
 services:
+  # Redis 서비스
+  - type: redis
+    name: ctfd-redis
+    region: oregon
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: "Allow all connections"
+
   # CTFd 웹 서비스
   - type: web
     name: ctfd
@@ -18,4 +26,10 @@ services:
       - key: DATABASE_URL
         fromDatabase:
           name: ctfd-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          # 👇👇👇 이 부분이 추가되었습니다 👇👇👇
+          type: redis
+          name: ctfd-redis
           property: connectionString
