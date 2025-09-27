@@ -27,7 +27,6 @@ services:
     env: postgres
     region: oregon # 반드시 웹 서비스와 동일한 리전으로 설정
     plan: free # 또는 유료 플랜
-    postgresMajorVersion: 14
 
   # Redis 데이터베이스 정의 (선택사항이지만 권장)
   - type: redis
