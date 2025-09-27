@@ -1,10 +1,8 @@
 services:
-  # 1. PostgreSQL 데이터베이스 (새 이름으로 정의)
+  # 1. PostgreSQL 데이터베이스 (필수 항목인 type, name, region만 남김)
   - type: pserv
     name: ctfd-db
     region: oregon
-    databaseName: ctfd
-    user: ctfd_user
 
   # 2. Redis 데이터베이스
   - type: redis
@@ -14,7 +12,7 @@ services:
       - source: 0.0.0.0/0
         description: "Allow all connections"
 
-  # 3. CTFd 웹 서비스 (데이터베이스 정의 이후에 배치)
+  # 3. CTFd 웹 서비스
   - type: web
     name: ctfd
     env: python
@@ -27,7 +25,6 @@ services:
       - key: DATABASE_URL
         fromService:
           type: pserv
-          # 새로 변경된 데이터베이스 이름(ctfd-db)을 참조
           name: ctfd-db
           property: connectionString
       - key: REDIS_URL
