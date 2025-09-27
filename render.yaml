@@ -1,10 +1,12 @@
-services:
-  # 1. PostgreSQL 데이터베이스 (필수 항목인 type, name, region만 남김)
-  - type: pserv
-    name: ctfd-db
+# 데이터베이스를 정의하는 최상위 섹션
+databases:
+  - name: ctfd-db
     region: oregon
+    # 'type: pserv'를 쓸 필요 없이, databases 섹션 자체가 PostgreSQL을 의미합니다.
 
-  # 2. Redis 데이터베이스
+# 실행되는 서비스들을 정의하는 최상위 섹션
+services:
+  # Redis는 데이터베이스지만 'services' 섹션에서 'type: redis'로 정의해야 합니다.
   - type: redis
     name: ctfd-redis
     region: oregon
@@ -12,7 +14,7 @@ services:
       - source: 0.0.0.0/0
         description: "Allow all connections"
 
-  # 3. CTFd 웹 서비스
+  # CTFd 웹 서비스
   - type: web
     name: ctfd
     env: python
@@ -23,12 +25,12 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
-        fromService:
-          type: pserv
+        fromDatabase:
+          # 'fromService'가 아닌 'fromDatabase'를 사용하여 databases 섹션의 리소스를 참조합니다.
           name: ctfd-db
           property: connectionString
       - key: REDIS_URL
         fromService:
-          type: redis
+          # Redis는 'services'에 있으므로 'fromService'를 사용합니다.
           name: ctfd-redis
           property: connectionString
