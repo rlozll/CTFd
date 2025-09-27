@@ -22,7 +22,7 @@ fi
 # Skip db ping if SKIP_DB_PING is set to a value other than false or empty string
 if [[ "$SKIP_DB_PING" == "false" ]]; then
   # Ensures that the database is available
-  python ping.py
+  /opt/venv/bin/python /opt/CTFd/ping.py
 fi
 
 # Initialize database
