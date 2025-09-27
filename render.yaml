@@ -1,0 +1,36 @@
+services:
+  # CTFd 웹 서비스 정의
+  - type: web
+    name: ctfd
+    env: python
+    region: oregon # 반드시 데이터베이스와 동일한 리전으로 설정
+    plan: free # 또는 유료 플랜
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn --bind 0.0.0.0:${PORT} --workers 4 'CTFd:create_app()'"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true # 자동으로 시크릿 키 생성
+      - key: DATABASE_URL
+        fromService:
+          type: pserv
+          name: swingctfdb
+          property: connectionString
+      - key: REDIS_URL # CTFd가 Redis를 사용할 경우
+        fromService:
+          type: redis
+          name: ctfd-redis
+          property: connectionString
+
+  # PostgreSQL 데이터베이스 정의
+  - type: pserv
+    name: swingctfdb
+    env: postgres
+    region: oregon # 반드시 웹 서비스와 동일한 리전으로 설정
+    plan: free # 또는 유료 플랜
+    postgresMajorVersion: 14
+
+  # Redis 데이터베이스 정의 (선택사항이지만 권장)
+  - type: redis
+    name: ctfd-redis
+    region: oregon
+    plan: free
