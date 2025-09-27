@@ -3,19 +3,20 @@ services:
   - type: web
     name: ctfd
     env: python
-    region: oregon # 반드시 데이터베이스와 동일한 리전으로 설정
-    plan: free # 또는 유료 플랜
+    region: oregon
+    plan: free
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn --bind 0.0.0.0:${PORT} --workers 4 'CTFd:create_app()'"
     envVars:
       - key: SECRET_KEY
-        generateValue: true # 자동으로 시크릿 키 생성
+        generateValue: true
       - key: DATABASE_URL
         fromService:
           type: pserv
           name: swingctfdb
-          property: connectionString
-      - key: REDIS_URL # CTFd가 Redis를 사용할 경우
+          # 'connectionString'을 'internalConnectionString'으로 수정
+          property: internalConnectionString
+      - key: REDIS_URL
         fromService:
           type: redis
           name: ctfd-redis
@@ -24,12 +25,16 @@ services:
   # PostgreSQL 데이터베이스 정의
   - type: pserv
     name: swingctfdb
-    env: postgres
-    region: oregon # 반드시 웹 서비스와 동일한 리전으로 설정
-    plan: free # 또는 유료 플랜
+    region: oregon
+    plan: free
+    # 불필요한 'env: postgres' 줄 삭제
 
-  # Redis 데이터베이스 정의 (선택사항이지만 권장)
+  # Redis 데이터베이스 정의
   - type: redis
     name: ctfd-redis
     region: oregon
     plan: free
+    # IP 허용 목록 추가
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: "Allow all connections"
